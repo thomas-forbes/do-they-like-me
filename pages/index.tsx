@@ -1,3 +1,5 @@
+import Response from './Response'
+
 const Question = () => {
   return (
     <div className="flex flex-row py-1 px-3 items-center">
@@ -28,6 +30,7 @@ export default function Home() {
             + Them
           </p>
         </div>
+        <Response />
       </div>
     </div>
   )
