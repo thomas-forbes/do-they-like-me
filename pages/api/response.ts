@@ -14,7 +14,7 @@ export default async function handler(
   const openai = new OpenAIApi(configuration)
   const answer: any = await openai.createCompletion({
     model: 'text-davinci-002',
-    prompt: 'Say this is a test',
+    prompt: 'Is the woman romantically attracted to the man? (Yes, Maybe, Probably Not, No) /n Him: hey /n Her: go away',
     max_tokens: 256,
     temperature: 0,
   })

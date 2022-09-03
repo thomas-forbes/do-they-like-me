@@ -6,13 +6,17 @@ const Response = () => {
   const fetchResponse = async () => {
     const answer = await fetch('api/response')
     const data = await answer.json()
-    console.log(data)
     setResponse(data.answer)
   }
 
   return (
     <div>
-      <button onClick={fetchResponse}>Get Data</button>
+      <button
+        className="flex-1 text-center rounded-lg p-3 my-5 ml-1 bg-[#2b2031]"
+        onClick={fetchResponse}
+      >
+        Find Out Her True Feelings...
+      </button>
       <div>{response}</div>
     </div>
   )
