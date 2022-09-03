@@ -47,7 +47,7 @@ export default function Home() {
     setRatingSubmitted(true)
   }
   return (
-    <div className="flex flex-col w-full h-full my-8 items-center">
+    <div className="flex flex-col w-full h-full my-8 items-center px-4">
       <h1 className="text-center font-bold text-6xl mb-5">Do They Like You?</h1>
       <h2 className="text-center text-2xl mb-5">
         Decipher their mixed signals and cryptic messages
@@ -89,7 +89,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-
         <button
           className="flex-1 text-center rounded-lg p-3 my-5 ml-1 bg-[#32243d] w-11/12"
           onClick={fetchAnswer}
