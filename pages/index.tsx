@@ -58,6 +58,7 @@ export default function Home() {
       refs[messages.length - 1]?.focus()
       prevMessageLen = messages.length
     }
+    setAnswer('')
   }, [messages])
 
   const fetchAnswer = async () => {
@@ -157,7 +158,7 @@ export default function Home() {
             <p className="mb-5 text-4xl text-center">
               They <span className="font-bold">{answer}</span> like you
             </p>
-            {!ratingSubmitted && (
+            {!ratingSubmitted ? (
               <>
                 <h3 className="text-2xl text-center mb-2">Rate this answer</h3>
                 <div className="flex flex-row">
@@ -172,6 +173,10 @@ export default function Home() {
                   ))}
                 </div>
               </>
+            ) : (
+              <p className="text-center text-1xl">
+                Thank you for your feedback :)
+              </p>
             )}
           </>
         ) : null}
