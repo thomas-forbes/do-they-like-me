@@ -1,10 +1,13 @@
-import { useState } from 'react'
-import { Message } from '../utils/types'
-import { ratings } from '../utils/types'
 import { initializeApp } from 'firebase/app'
-import { getAnalytics } from 'firebase/analytics'
-import { getFirestore } from 'firebase/firestore'
-import { collection, addDoc, doc, updateDoc } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  doc,
+  getFirestore,
+  updateDoc,
+} from 'firebase/firestore'
+import { useState } from 'react'
+import { Message, ratings } from '../utils/types'
 
 const MessageView = ({
   message,
@@ -47,7 +50,6 @@ export default function Home() {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   }
   const app = initializeApp(firebaseConfig)
-  //const analytics = getAnalytics(app)
   const db = getFirestore(app)
 
   const fetchAnswer = async () => {
@@ -59,17 +61,18 @@ export default function Home() {
     })
     const data = await res.json()
     setAnswer(data.answer)
-    const docRef = await addDoc(collection(db, 'messages'), {
-      message: messages,
-      response: data.answer,
-    })
-    const messageId = docRef.id
-    setMessageId(messageId)
+
+    setMessageId(
+      await addDoc(collection(db, 'messages'), {
+        message: messages,
+        response: data.answer,
+      }).id
+    )
   }
-  const submitRating = async (rating: string) => {
+
+  const submitRating = (rating: string) => {
     setRatingSubmitted(true)
-    const messageRef = doc(db, 'messages', messageId)
-    await updateDoc(messageRef, {
+    updateDoc(doc(db, 'messages', messageId), {
       rating: rating,
     })
   }
@@ -103,7 +106,7 @@ export default function Home() {
             />
           ))}
           <div className="flex flex-row mx-2 mt-2 mb-1">
-            {['You', 'Them'].map((x) => (
+            {['you', 'them'].map((x) => (
               <p
                 className={`flex-1 text-center rounded-lg py-1 mx-1 bg-[#32243d] hover:cursor-pointer`}
                 key={x}
