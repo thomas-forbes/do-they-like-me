@@ -43,7 +43,9 @@ const MessageView = ({
 export default function Home() {
   const [messages, setMessages]: [Message[], any] = useState([
     { from: 'you', message: '' },
+    { from: 'them', message: '' },
   ])
+  let prevMessageLen = 2
   const [answer, setAnswer]: [string, any] = useState('')
   const [ratingSubmitted, setRatingSubmitted]: [boolean, any] = useState(false)
   const [messageId, setMessageId]: [string, any] = useState('')
@@ -52,7 +54,10 @@ export default function Home() {
   const refs: any = {}
 
   useEffect(() => {
-    refs[messages.length - 1]?.focus()
+    if (prevMessageLen < messages.length) {
+      refs[messages.length - 1]?.focus()
+      prevMessageLen = messages.length
+    }
   }, [messages])
 
   const fetchAnswer = async () => {
@@ -87,6 +92,9 @@ export default function Home() {
       <h2 className="text-center text-2xl mb-5">
         Decipher their mixed signals and cryptic messages...
       </h2>
+      <p className="text-center text-gray-400 mb-1">
+        Enter a text conversation below
+      </p>
       {/* <div className="max-w-[82] bg-[#2b2031] h-24 rounded-lg"></div> */}
       <div className="flex flex-col items-center w-96 px-4">
         <div className="border-[#32373e] border rounded-xl py-1 w-full">
@@ -137,7 +145,7 @@ export default function Home() {
           </div>
         </div>
         <button
-          className="flex-1 text-center rounded-lg p-3 my-5 ml-1 bg-[#32243d] w-11/12"
+          className="flex-1 text-center rounded-lg p-3 my-5 ml-1 bg-[#a4add3] text-black w-11/12"
           onClick={fetchAnswer}
         >
           Find Out Their True Feelings...
