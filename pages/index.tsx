@@ -1,4 +1,3 @@
-import { initializeApp } from 'firebase/app'
 import {
   addDoc,
   collection,
@@ -40,17 +39,8 @@ export default function Home() {
   const [answer, setAnswer]: [string, any] = useState('')
   const [ratingSubmitted, setRatingSubmitted]: [boolean, any] = useState(false)
   const [messageId, setMessageId]: [string, any] = useState('')
-  const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-  }
-  const app = initializeApp(firebaseConfig)
-  const db = getFirestore(app)
+
+  const db = getFirestore()
 
   const fetchAnswer = async () => {
     setRatingSubmitted(false)
@@ -63,10 +53,12 @@ export default function Home() {
     setAnswer(data.answer)
 
     setMessageId(
-      await addDoc(collection(db, 'messages'), {
-        message: messages,
-        response: data.answer,
-      }).id
+      (
+        await addDoc(collection(db, 'messages'), {
+          message: messages,
+          response: data.answer,
+        })
+      ).id
     )
   }
 
