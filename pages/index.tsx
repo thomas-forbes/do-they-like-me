@@ -1,5 +1,12 @@
+import {
+  addDoc,
+  collection,
+  doc,
+  getFirestore,
+  updateDoc,
+} from 'firebase/firestore'
 import { useState } from 'react'
-import { Message } from '../utils/types'
+import { Message, ratings } from '../utils/types'
 
 const MessageView = ({
   message,
@@ -31,7 +38,9 @@ export default function Home() {
   const [messages, setMessages]: [Message[], any] = useState([])
   const [answer, setAnswer]: [string, any] = useState('')
   const [ratingSubmitted, setRatingSubmitted]: [boolean, any] = useState(false)
-  const ratings = ['Great', 'Good', 'Ok', 'Bad', 'Wrong']
+  const [messageId, setMessageId]: [string, any] = useState('')
+
+  const db = getFirestore()
 
   const fetchAnswer = async () => {
     setRatingSubmitted(false)
@@ -42,15 +51,28 @@ export default function Home() {
     })
     const data = await res.json()
     setAnswer(data.answer)
+
+    setMessageId(
+      (
+        await addDoc(collection(db, 'messages'), {
+          message: messages,
+          response: data.answer,
+        })
+      ).id
+    )
   }
+
   const submitRating = (rating: string) => {
     setRatingSubmitted(true)
+    updateDoc(doc(db, 'messages', messageId), {
+      rating: rating,
+    })
   }
   return (
     <div className="flex flex-col w-full h-full my-8 items-center px-4">
       <h1 className="text-center font-bold text-6xl mb-5">Do They Like You?</h1>
       <h2 className="text-center text-2xl mb-5">
-        Decipher their mixed signals and cryptic messages
+        Decipher their mixed signals and cryptic messages...
       </h2>
       {/* <div className="max-w-[82] bg-[#2b2031] h-24 rounded-lg"></div> */}
       <div className="flex flex-col items-center w-96 px-4">
