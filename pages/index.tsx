@@ -1,14 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Message } from '../utils/types'
 
 const MessageView = ({
   message,
   onChange,
   remove,
+  onEnter,
+  inputRef,
 }: {
   message: Message
   onChange: any
   remove: any
+  onEnter: any
+  inputRef: any
 }) => {
   return (
     <div className="flex flex-row py-1 px-3 items-center w-full">
@@ -18,7 +22,9 @@ const MessageView = ({
         placeholder="Message..."
         className="flex-[4] bg-black border-b border-[#32373e] focus:outline-none"
         value={message.message}
+        onKeyDown={(e) => (e.code == 'Enter' ? onEnter() : null)}
         onChange={onChange}
+        ref={inputRef}
       />
       <p onClick={remove} className="ml-1 hover:cursor-pointer font-bold">
         ｘ
@@ -32,6 +38,11 @@ export default function Home() {
   const [answer, setAnswer]: [string, any] = useState('')
   const [ratingSubmitted, setRatingSubmitted]: [boolean, any] = useState(false)
   const ratings = ['Great', 'Good', 'Ok', 'Bad', 'Wrong']
+  const refs: any = {}
+
+  useEffect(() => {
+    refs[messages.length - 1]?.focus()
+  }, [messages])
 
   const fetchAnswer = async () => {
     setRatingSubmitted(false)
@@ -59,6 +70,18 @@ export default function Home() {
             <MessageView
               message={message}
               key={idx}
+              inputRef={(input: any) => (refs[idx] = input)}
+              onEnter={() =>
+                idx == messages.length - 1 && message.message !== ''
+                  ? setMessages([
+                      ...messages,
+                      {
+                        from: message.from == 'you' ? 'them' : 'you',
+                        message: '',
+                      },
+                    ])
+                  : null
+              }
               remove={() =>
                 setMessages([
                   ...messages.slice(0, idx),

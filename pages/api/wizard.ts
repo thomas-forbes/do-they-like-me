@@ -46,7 +46,7 @@ export default async function handler(
   console.log(wholePrompt)
 
   const configuration = new Configuration({
-    apiKey: process.env.NEXT_PUBLIC_OPENAI_KEY,
+    apiKey: process.env.OPENAI_KEY,
   })
   const openai = new OpenAIApi(configuration)
   const response: any = await openai.createCompletion({
