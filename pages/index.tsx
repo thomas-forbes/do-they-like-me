@@ -1,5 +1,10 @@
 import { useState } from 'react'
 import { Message } from '../utils/types'
+import { ratings } from '../utils/types'
+import { initializeApp } from 'firebase/app'
+import { getAnalytics } from 'firebase/analytics'
+import { getFirestore } from 'firebase/firestore'
+import { collection, addDoc, doc, updateDoc } from 'firebase/firestore'
 
 const MessageView = ({
   message,
@@ -31,7 +36,19 @@ export default function Home() {
   const [messages, setMessages]: [Message[], any] = useState([])
   const [answer, setAnswer]: [string, any] = useState('')
   const [ratingSubmitted, setRatingSubmitted]: [boolean, any] = useState(false)
-  const ratings = ['Great', 'Good', 'Ok', 'Bad', 'Wrong']
+  const [messageId, setMessageId]: [string, any] = useState('')
+  const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  }
+  const app = initializeApp(firebaseConfig)
+  //const analytics = getAnalytics(app)
+  const db = getFirestore(app)
 
   const fetchAnswer = async () => {
     setRatingSubmitted(false)
@@ -42,15 +59,25 @@ export default function Home() {
     })
     const data = await res.json()
     setAnswer(data.answer)
+    const docRef = await addDoc(collection(db, 'messages'), {
+      message: messages,
+      response: data.answer,
+    })
+    const messageId = docRef.id
+    setMessageId(messageId)
   }
-  const submitRating = (rating: string) => {
+  const submitRating = async (rating: string) => {
     setRatingSubmitted(true)
+    const messageRef = doc(db, 'messages', messageId)
+    await updateDoc(messageRef, {
+      rating: rating,
+    })
   }
   return (
     <div className="flex flex-col w-full h-full my-8 items-center">
       <h1 className="text-center font-bold text-6xl mb-5">Do They Like You?</h1>
       <h2 className="text-center text-2xl mb-5">
-        Decipher their mixed signals and cryptic messages
+        Decipher their mixed signals and cryptic messages...
       </h2>
       {/* <div className="max-w-[82] bg-[#2b2031] h-24 rounded-lg"></div> */}
       <div className="flex flex-col items-center w-96 px-4">
@@ -76,7 +103,7 @@ export default function Home() {
             />
           ))}
           <div className="flex flex-row mx-2 mt-2 mb-1">
-            {['you', 'them'].map((x) => (
+            {['You', 'Them'].map((x) => (
               <p
                 className={`flex-1 text-center rounded-lg py-1 mx-1 bg-[#32243d] hover:cursor-pointer`}
                 key={x}
