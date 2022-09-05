@@ -1,3 +1,4 @@
+import splitbee from '@splitbee/web'
 import {
   addDoc,
   collection,
@@ -71,14 +72,15 @@ export default function Home() {
     const data = await res.json()
     setAnswer(data.answer)
 
-    setMessageId(
-      (
-        await addDoc(collection(db, 'messages'), {
-          message: messages,
-          response: data.answer,
-        })
-      ).id
-    )
+    let tMessageId = (
+      await addDoc(collection(db, 'messages'), {
+        message: messages,
+        response: data.answer,
+      })
+    ).id
+    setMessageId(tMessageId)
+
+    splitbee.track('message', { id: tMessageId })
   }
 
   const submitRating = (rating: string) => {

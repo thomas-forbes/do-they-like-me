@@ -1,7 +1,9 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import splitbee from '@splitbee/web'
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
+import type { AppProps } from 'next/app'
+import { useEffect } from 'react'
+import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const firebaseConfig = {
@@ -15,6 +17,13 @@ function MyApp({ Component, pageProps }: AppProps) {
   }
   const app = initializeApp(firebaseConfig)
   const db = getFirestore(app)
+
+  useEffect(() => {
+    splitbee.init({
+      scriptUrl: '/bee.js',
+      apiUrl: '/_hive',
+    })
+  }, [])
 
   return <Component {...pageProps} />
 }
