@@ -95,8 +95,9 @@ export default function Home() {
       <h2 className="text-center text-2xl mb-5">
         Decipher their mixed signals and cryptic messages...
       </h2>
-      <p className="text-center text-gray-400 mb-1">
-        Enter a text conversation below
+      <p className="text-center text-gray-400 mb-2 w-96 px-2">
+        Enter a text message conversation below and find out whether they like
+        you or not
       </p>
       {/* <div className="max-w-[82] bg-[#2b2031] h-24 rounded-lg"></div> */}
       <div className="flex flex-col items-center w-96 px-4">
@@ -115,7 +116,7 @@ export default function Home() {
                         message: '',
                       },
                     ])
-                  : null
+                  : refs[idx + 1]?.focus()
               }
               remove={() =>
                 setMessages([
