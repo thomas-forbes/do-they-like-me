@@ -72,10 +72,13 @@ export default function Home() {
     const data = await res.json()
     setAnswer(data.answer)
 
+    const timestamp = Math.floor(Date.now() / 1000)
+
     let tMessageId = (
       await addDoc(collection(db, 'messages'), {
         message: messages,
         response: data.answer,
+        timestamp: timestamp,
       })
     ).id
     setMessageId(tMessageId)
