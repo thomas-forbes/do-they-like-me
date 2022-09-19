@@ -230,6 +230,7 @@ export default function Home() {
           >
             Will Carkner
           </a>
+          . Both single 😉
         </p>
       </div>
     </div>
