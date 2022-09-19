@@ -208,8 +208,9 @@ export default function Home() {
       <div className="flex flex-col align-center self-center my-4">
         <a
           className="text-center text-2xl mb-2 font-bold underline"
-          target="_blank"
+          // target="_blank"
           href="https://www.buymeacoffee.com/thomasforbes"
+          // rel="noopener"
         >
           Support Us!
         </a>
@@ -218,7 +219,8 @@ export default function Home() {
           <a
             href="https://thomasforbes.com/"
             className="underline"
-            target="_blank"
+            // target="_blank"
+            // rel="noopener"
           >
             Thomas Forbes
           </a>{' '}
@@ -226,7 +228,8 @@ export default function Home() {
           <a
             href="https://willcarkner.com/"
             className="underline"
-            target="_blank"
+            // target="_blank"
+            // rel="noopener"
           >
             Will Carkner
           </a>
