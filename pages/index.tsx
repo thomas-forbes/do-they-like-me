@@ -30,7 +30,13 @@ const MessageView = ({
         placeholder="Message..."
         className="flex-[4] bg-black border-b border-[#32373e] focus:outline-none"
         value={message.message}
-        onKeyDown={(e) => (e.code == 'Enter' ? onEnter() : null)}
+        onKeyUp={(e) =>
+          e.code == 'Enter'
+            ? onEnter()
+            : e.code == 'Backspace' && message.message == ''
+            ? remove()
+            : null
+        }
         onChange={onChange}
         ref={inputRef}
       />
@@ -46,7 +52,7 @@ export default function Home() {
     { from: 'you', message: '' },
     { from: 'them', message: '' },
   ])
-  let prevMessageLen = 2
+  const [prevMessageLen, setPrevMessageLen] = useState(2)
   const [answer, setAnswer]: [string, any] = useState('')
   const [ratingSubmitted, setRatingSubmitted]: [boolean, any] = useState(false)
   const [messageId, setMessageId]: [string, any] = useState('')
@@ -55,9 +61,12 @@ export default function Home() {
   const refs: any = {}
 
   useEffect(() => {
+    console.log(prevMessageLen, messages.length)
     if (prevMessageLen < messages.length) {
       refs[messages.length - 1]?.focus()
-      prevMessageLen = messages.length
+      setPrevMessageLen(messages.length)
+    } else if (prevMessageLen > messages.length) {
+      setPrevMessageLen(messages.length)
     }
     setAnswer('')
   }, [messages])
@@ -93,99 +102,135 @@ export default function Home() {
     })
   }
   return (
-    <div className="flex flex-col w-full h-full my-8 items-center px-4">
-      <h1 className="text-center font-bold text-6xl mb-5">Do They Like You?</h1>
-      <h2 className="text-center text-2xl mb-5">
-        Decipher their mixed signals and cryptic messages...
-      </h2>
-      <p className="text-center text-gray-400 mb-2 w-96 px-2">
-        Enter a text message conversation below and find out whether they like
-        you or not
-      </p>
-      {/* <div className="max-w-[82] bg-[#2b2031] h-24 rounded-lg"></div> */}
-      <div className="flex flex-col items-center w-96 px-4">
-        <div className="border-[#32373e] border rounded-xl py-1 w-full">
-          {messages.map((message, idx) => (
-            <MessageView
-              message={message}
-              key={idx}
-              inputRef={(input: any) => (refs[idx] = input)}
-              onEnter={() =>
-                idx == messages.length - 1 && message.message !== ''
-                  ? setMessages([
-                      ...messages,
-                      {
-                        from: message.from == 'you' ? 'them' : 'you',
-                        message: '',
-                      },
-                    ])
-                  : refs[idx + 1]?.focus()
-              }
-              remove={() =>
-                setMessages([
-                  ...messages.slice(0, idx),
-                  ...messages.slice(idx + 1, messages.length),
-                ])
-              }
-              onChange={(e: any) =>
-                setMessages(
-                  Object.assign([], {
-                    ...messages,
-                    [idx]: { ...message, message: e.target.value },
-                  })
-                )
-              }
-            />
-          ))}
-          <div className="flex flex-row mx-2 mt-2 mb-1">
-            {['you', 'them'].map((x) => (
-              <p
-                className={`flex-1 text-center rounded-lg py-1 mx-1 bg-[#32243d] hover:cursor-pointer`}
-                key={x}
-                onClick={() =>
-                  setMessages([...messages, { from: x, message: '' }])
+    <div className="flex flex-col justify-between h-full">
+      <div className="flex flex-col w-full h-full my-8 items-center px-4">
+        <h1 className="text-center font-bold text-6xl mb-5">
+          Do They Like You?
+        </h1>
+        <h2 className="text-center text-2xl mb-5">
+          Decipher their mixed signals and cryptic messages...
+        </h2>
+        <p className="text-center text-gray-400 mb-2 w-96 px-2">
+          Enter a text message conversation below and find out whether they like
+          you or not
+        </p>
+        {/* <div className="max-w-[82] bg-[#2b2031] h-24 rounded-lg"></div> */}
+        <div className="flex flex-col items-center w-96 px-4">
+          <div className="border-[#32373e] border rounded-xl py-1 w-full">
+            {messages.map((message, idx) => (
+              <MessageView
+                message={message}
+                key={idx}
+                inputRef={(input: any) => (refs[idx] = input)}
+                onEnter={() =>
+                  idx == messages.length - 1 && message.message !== ''
+                    ? setMessages([
+                        ...messages,
+                        {
+                          from: message.from == 'you' ? 'them' : 'you',
+                          message: '',
+                        },
+                      ])
+                    : refs[idx + 1]?.focus()
                 }
-              >
-                + {x}
-              </p>
+                remove={() => {
+                  setMessages([
+                    ...messages.slice(0, idx),
+                    ...messages.slice(idx + 1, messages.length),
+                  ])
+                  refs[idx - 1]?.focus()
+                }}
+                onChange={(e: any) =>
+                  setMessages(
+                    Object.assign([], {
+                      ...messages,
+                      [idx]: { ...message, message: e.target.value },
+                    })
+                  )
+                }
+              />
             ))}
+            <div className="flex flex-row mx-2 mt-2 mb-1">
+              {['you', 'them'].map((x) => (
+                <p
+                  className={`flex-1 text-center rounded-lg py-1 mx-1 bg-[#32243d] hover:cursor-pointer`}
+                  key={x}
+                  onClick={() =>
+                    setMessages([...messages, { from: x, message: '' }])
+                  }
+                >
+                  + {x}
+                </p>
+              ))}
+            </div>
           </div>
-        </div>
-        <button
-          className="flex-1 text-center rounded-lg p-3 my-5 ml-1 bg-[#a4add3] text-black w-11/12"
-          onClick={fetchAnswer}
-        >
-          Find Out Their True Feelings...
-        </button>
-        {answer == 'Loading...' || answer == "Can't Tell" ? (
-          <p className="font-bold text-4xl text-center">{answer}</p>
-        ) : answer ? (
-          <>
-            <p className="mb-5 text-4xl text-center">
-              They <span className="font-bold">{answer}</span> like you
-            </p>
-            {!ratingSubmitted ? (
-              <>
-                <h3 className="text-2xl text-center mb-2">Rate this answer</h3>
-                <div className="flex flex-row">
-                  {ratings.map((x) => (
-                    <p
-                      key={x}
-                      className="flex-1 text-center mx-1 py-1 px-2 border border-[#32373e] rounded-xl hover:cursor-pointer"
-                      onClick={() => submitRating(x)}
-                    >
-                      {x}
-                    </p>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="text-center text-1xl">
-                Thank you for your feedback :)
+          <button
+            className="flex-1 text-center rounded-lg p-3 my-5 ml-1 bg-[#a4add3] text-black w-11/12"
+            onClick={fetchAnswer}
+          >
+            Find Out Their True Feelings...
+          </button>
+          {answer == 'Loading...' ||
+          answer == 'Unknown' ||
+          answer == 'You have been rate limited' ? (
+            <p className="font-bold text-4xl text-center">{answer}</p>
+          ) : answer ? (
+            <>
+              <p className="mb-5 text-4xl text-center">
+                They <span className="font-bold">{answer}</span> like you
               </p>
-            )}
-          </>
-        ) : null}
+              {!ratingSubmitted ? (
+                <>
+                  <h3 className="text-2xl text-center mb-2">
+                    Rate this answer
+                  </h3>
+                  <div className="flex flex-row">
+                    {ratings.map((x) => (
+                      <p
+                        key={x}
+                        className="flex-1 text-center mx-1 py-1 px-2 border border-[#32373e] rounded-xl hover:cursor-pointer"
+                        onClick={() => submitRating(x)}
+                      >
+                        {x}
+                      </p>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-center text-1xl">
+                  Thank you for your feedback :)
+                </p>
+              )}
+            </>
+          ) : null}
+        </div>
+      </div>
+      <div className="flex flex-col align-center self-center my-4">
+        <a
+          className="text-center text-2xl mb-2 font-bold underline"
+          target="_blank"
+          href="https://www.buymeacoffee.com/thomasforbes"
+        >
+          Support Us!
+        </a>
+        <p className="text-gray-400 text-center">
+          Built by{' '}
+          <a
+            href="https://thomasforbes.com/"
+            className="underline"
+            target="_blank"
+          >
+            Thomas Forbes
+          </a>{' '}
+          and{' '}
+          <a
+            href="https://willcarkner.com/"
+            className="underline"
+            target="_blank"
+          >
+            Will Carkner
+          </a>
+        </p>
       </div>
     </div>
   )
