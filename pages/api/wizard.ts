@@ -44,7 +44,9 @@ const isAttemptsGood = (req: NextApiRequest, res: NextApiResponse) => {
   if (attemptsStr === 'premium') return true
 
   const attempts = Number(attemptsStr) || 0
+  console.log(attempts)
   if (attempts > 10) return false
+  else return true
 }
 const addAttempts = (req: NextApiRequest, res: NextApiResponse) => {
   const attemptsStr = getCookie('attempts', { req, res })
