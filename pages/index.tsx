@@ -183,6 +183,7 @@ export default function Home() {
                 <a
                   className="underline"
                   href="https://buy.stripe.com/5kA3eAdxR4AF5Dq9AA"
+                  onClick={() => splitbee.track('rateLimitBuy')}
                 >
                   Get unlimited access
                 </a>
