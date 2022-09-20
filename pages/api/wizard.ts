@@ -39,14 +39,33 @@ answer: Unknown
 
 `
 
+const isAttemptsGood = (req: NextApiRequest, res: NextApiResponse) => {
+  const attemptsStr = getCookie('attempts', { req, res })
+  if (attemptsStr === 'premium') return true
+
+  const attempts = Number(attemptsStr) || 0
+  if (attempts > 10) return false
+}
+const addAttempts = (req: NextApiRequest, res: NextApiResponse) => {
+  const attemptsStr = getCookie('attempts', { req, res })
+  if (attemptsStr === 'premium') return
+  else
+    setCookie('attempts', (Number(attemptsStr) || 0 + 1).toString(), {
+      req,
+      res,
+      maxAge: 60 * 60 * 3,
+    })
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const attempts = Number(getCookie('attempts', { req, res })) || 0
-  if (attempts > 30) {
+  if (!isAttemptsGood(req, res)) {
     res.status(200).json({ answer: 'You have been rate limited' })
+    return
   }
+
   const messages: Message[] = JSON.parse(req.body).messages
   const formattedMessages = messages
     .map(
@@ -63,17 +82,13 @@ export default async function handler(
   })
   const openai = new OpenAIApi(configuration)
   const response: any = await openai.createCompletion({
-    model: 'text-curie-001',
+    model: 'text-davinci-002',
     prompt: wholePrompt,
     max_tokens: 5,
     temperature: 0.5,
   })
   const answer = response.data.choices[0].text.trim()
-  setCookie('attempts', (attempts + 1).toString(), {
-    req,
-    res,
-    maxAge: 60 * 60 * 6,
-  })
 
+  addAttempts(req, res)
   res.status(200).json({ answer: answer })
 }

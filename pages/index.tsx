@@ -81,18 +81,22 @@ export default function Home() {
     const data = await res.json()
     setAnswer(data.answer)
 
-    const timestamp = Math.floor(Date.now() / 1000)
+    if (data.answer == 'You have been rate limited') {
+      splitbee.track('rateLimited')
+    } else {
+      const timestamp = Math.floor(Date.now() / 1000)
 
-    let tMessageId = (
-      await addDoc(collection(db, 'messages'), {
-        message: messages,
-        response: data.answer,
-        timestamp: timestamp,
-      })
-    ).id
-    setMessageId(tMessageId)
+      let tMessageId = (
+        await addDoc(collection(db, 'messages'), {
+          message: messages,
+          response: data.answer,
+          timestamp: timestamp,
+        })
+      ).id
+      setMessageId(tMessageId)
 
-    splitbee.track('message', { id: tMessageId })
+      splitbee.track('message', { id: tMessageId })
+    }
   }
 
   const submitRating = (rating: string) => {
@@ -211,6 +215,7 @@ export default function Home() {
           // target="_blank"
           href="https://www.buymeacoffee.com/thomasforbes"
           // rel="noopener"
+          onClick={() => splitbee.track('buymeacoffee.com')}
         >
           Support Us!
         </a>
@@ -219,6 +224,7 @@ export default function Home() {
           <a
             href="https://thomasforbes.com/"
             className="underline"
+            onClick={() => splitbee.track('thomasforbes.com')}
             // target="_blank"
             // rel="noopener"
           >
@@ -228,12 +234,22 @@ export default function Home() {
           <a
             href="https://willcarkner.com/"
             className="underline"
+            onClick={() => splitbee.track('willcarkner.com')}
             // target="_blank"
             // rel="noopener"
           >
             Will Carkner
           </a>
-          . Both single 😉
+          .{' '}
+          <a
+            className="underline"
+            href={`mailto:relationships@thomasforbes.com${encodeURI(
+              '?subject=I think I like you guys...&body=You are both just amazing... I want to get to know you more 😉'
+            )}`}
+            onClick={() => splitbee.track('single-no-more')}
+          >
+            Both single 😉
+          </a>
         </p>
       </div>
     </div>
