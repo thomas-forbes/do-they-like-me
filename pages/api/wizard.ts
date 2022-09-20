@@ -52,7 +52,7 @@ const addAttempts = (req: NextApiRequest, res: NextApiResponse) => {
   const attemptsStr = getCookie('attempts', { req, res })
   if (attemptsStr === 'premium') return
   else
-    setCookie('attempts', (Number(attemptsStr) || 0 + 1).toString(), {
+    setCookie('attempts', ((Number(attemptsStr) || 0) + 1).toString(), {
       req,
       res,
       maxAge: 60 * 60 * 3,
