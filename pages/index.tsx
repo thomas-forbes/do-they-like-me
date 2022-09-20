@@ -116,7 +116,7 @@ export default function Home() {
         </h2>
         <p className="text-center text-gray-400 mb-2 w-96 px-2">
           Enter a text message conversation below and find out whether they like
-          you or not
+          you or not ❤️
         </p>
         {/* <div className="max-w-[82] bg-[#2b2031] h-24 rounded-lg"></div> */}
         <div className="flex flex-col items-center w-96 px-4">
@@ -177,7 +177,17 @@ export default function Home() {
           {answer == 'Loading...' ||
           answer == 'Unknown' ||
           answer == 'You have been rate limited' ? (
-            <p className="font-bold text-4xl text-center">{answer}</p>
+            <>
+              <p className="font-bold text-4xl text-center mb-1">{answer}</p>
+              {answer == 'You have been rate limited' && (
+                <a
+                  className="underline"
+                  href="https://buy.stripe.com/5kA3eAdxR4AF5Dq9AA"
+                >
+                  Get unlimited access
+                </a>
+              )}
+            </>
           ) : answer ? (
             <>
               <p className="mb-5 text-4xl text-center">
